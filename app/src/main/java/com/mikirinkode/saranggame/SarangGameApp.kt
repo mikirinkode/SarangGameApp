@@ -53,7 +53,11 @@ fun SarangGameApp(
 
         // route: home/about
         composable(Screen.About.route){
-            AboutScreen()
+            AboutScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 
