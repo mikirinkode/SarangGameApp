@@ -4,25 +4,24 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikirinkode.saranggame.data.remote.RemoteDataSource
-import com.mikirinkode.saranggame.data.remote.response.GameDetailResponse
+import com.mikirinkode.saranggame.data.remote.response.Game
 import com.mikirinkode.saranggame.utils.ApiResponse
 import com.mikirinkode.saranggame.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GameViewModel(private val remoteDataSource: RemoteDataSource) : ViewModel() {
 
-    private val _gameDetailState: MutableStateFlow<UiState<GameDetailResponse>> =
+    private val _gameDetailState: MutableStateFlow<UiState<Game>> =
         MutableStateFlow(UiState.Loading)
-    val gameDetailState: StateFlow<UiState<GameDetailResponse>>
+    val gameDetailState: StateFlow<UiState<Game>>
         get() = _gameDetailState
 
-    private val _listState: MutableStateFlow<UiState<List<GameDetailResponse>>> =
+    private val _listState: MutableStateFlow<UiState<List<Game>>> =
         MutableStateFlow(UiState.Loading)
-    val listState: StateFlow<UiState<List<GameDetailResponse>>>
+    val listState: StateFlow<UiState<List<Game>>>
         get() = _listState
 
 

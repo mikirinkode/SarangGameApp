@@ -2,7 +2,7 @@ package com.mikirinkode.saranggame.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-data class GameDetailResponse(
+data class Game(
 
 	@field:SerializedName("id")
 	val id: Int? = null,

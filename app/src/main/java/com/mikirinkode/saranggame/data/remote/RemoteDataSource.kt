@@ -1,8 +1,8 @@
 package com.mikirinkode.saranggame.data.remote
 
 import android.util.Log
-import com.mikirinkode.saranggame.data.remote.response.GameDetailResponse
-import com.mikirinkode.saranggame.data.remote.response.GameListResponse
+import com.mikirinkode.saranggame.data.remote.response.Game
+import com.mikirinkode.saranggame.data.remote.response.GameList
 import com.mikirinkode.saranggame.utils.ApiResponse
 import com.mikirinkode.saranggame.utils.Constants
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ class RemoteDataSource(private val api: ApiService) {
 
     private val apiKey = Constants.API_KEY
 
-    suspend fun getGameList(): Flow<ApiResponse<GameListResponse>> {
+    suspend fun getGameList(): Flow<ApiResponse<GameList>> {
         return flow {
             try {
                 val response = api.getGameList(apiKey)
@@ -34,7 +34,7 @@ class RemoteDataSource(private val api: ApiService) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getDetailGame(id: String): Flow<ApiResponse<GameDetailResponse>> {
+    suspend fun getDetailGame(id: String): Flow<ApiResponse<Game>> {
         return flow {
             try {
                 val response = api.getGameDetail(id, apiKey)
