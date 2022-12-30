@@ -36,19 +36,24 @@ fun SarangGameApp(
                     navController.navigate(Screen.About.route)
                 },
                 navigateToDetail = { gameId ->
-                    navController.navigate(Screen.GameDetail.createRoute(gameId))
+                    navController.navigate(Screen.Detail.createRoute(gameId))
                 })
         }
 
         // route: home/{gameId}
         composable(
-            Screen.GameDetail.route,
+            Screen.Detail.route,
             arguments = listOf(
                 navArgument("gameId") { type = NavType.IntType },
             )
         ) {
             val gameId = it.arguments?.getInt("gameId") ?: 0
-            DetailScreen()
+            DetailScreen(
+                gameId = gameId,
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         // route: home/about

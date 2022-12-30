@@ -34,6 +34,7 @@ import com.mikirinkode.saranggame.ui.theme.SarangGameTheme
 import com.mikirinkode.saranggame.utils.UiState
 import com.mikirinkode.saranggame.viewmodel.GameViewModel
 import com.mikirinkode.saranggame.viewmodel.ViewModelFactory
+import java.text.DecimalFormat
 
 @Composable
 fun HomeScreen(
@@ -50,14 +51,18 @@ fun HomeScreen(
     ) {
         TopAppBar(
             title = {
-                Text(text = "SarangGame", color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "SarangGame",
+                    color = MaterialTheme.colors.primary,
+                    fontWeight = FontWeight.Bold
+                )
             },
             actions = {
                 IconButton(onClick = navigateToAbout) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = stringResource(R.string.about_page),
-                        tint = Color.White
+                        tint = MaterialTheme.colors.primary
                     )
                 }
             },
@@ -77,9 +82,11 @@ fun HomeScreen(
                             ) {
                                 items(uiState.data) { game ->
                                     val genres = getGenres(game.genres)
+                                    val rating = DecimalFormat("#.#").format(game.rating?.times(2))
                                     GameItemCard(
                                         imageUrl = game.backgroundImage.toString(),
                                         title = game.name.toString(),
+                                        rating = rating.toString(),
                                         genres = genres,
                                         onItemClick = { game.id?.let { navigateToDetail(it) } }
                                     )
