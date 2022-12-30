@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sarang Game</string>
+    <string name="info_app_button">Info App Button</string>
+    <string name="about_page">about_page</string>
 </resources>

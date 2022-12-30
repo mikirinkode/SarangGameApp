@@ -1,54 +1,62 @@
 package com.mikirinkode.saranggame
 
-import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mikirinkode.saranggame.utils.UiState
-import com.mikirinkode.saranggame.viewmodel.GameViewModel
-import com.mikirinkode.saranggame.viewmodel.ViewModelFactory
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.mikirinkode.saranggame.ui.navigation.Screen
+import com.mikirinkode.saranggame.ui.screen.AboutScreen
+import com.mikirinkode.saranggame.ui.screen.DetailScreen
+import com.mikirinkode.saranggame.ui.screen.HomeScreen
 
 
 @Composable
 fun SarangGameApp(
-
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController()
 ) {
-    val context = LocalContext.current
-    val viewModel: GameViewModel =
-        viewModel(factory = ViewModelFactory.getInstance(context))
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    viewModel.listState.collectAsState(initial = UiState.Loading).value.let { uiState ->
-        when(uiState){
-            is UiState.Loading -> {
-                Log.e("Sarang Game APP", "GET LIST LOADING")
-                Box(modifier = Modifier.fillMaxSize()){
-                    Text(text = "LOADING", modifier = Modifier.align(Alignment.Center))
-                }
-                viewModel.getGameList()
-            }
-            is UiState.Success -> {
-                Log.e("Sarang Game APP", "GET LIST SUCCESS")
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route,
+        modifier = modifier
+    ) {
+        composable(Screen.Home.route) {
+            HomeScreen(
+                navigateToAbout = {
+                    navController.navigate(Screen.About.route)
+                },
+                navigateToDetail = { gameId ->
+                    navController.navigate(Screen.GameDetail.createRoute(gameId))
+                })
+        }
 
-                Box(modifier = Modifier.fillMaxSize()){
-                    Text(text = "SUCCESS", modifier = Modifier.align(Alignment.Center))
-                }
-            }
-            is UiState.Error -> {
-                Log.e("Sarang Game APP", "GET LIST ERROR")
+        // route: home/{gameId}
+        composable(
+            Screen.GameDetail.route,
+            arguments = listOf(
+                navArgument("gameId") { type = NavType.IntType },
+            )
+        ) {
+            val gameId = it.arguments?.getInt("gameId") ?: 0
+            DetailScreen()
+        }
 
-                Box(modifier = Modifier.fillMaxSize()){
-                    Text(text = "ERROR", modifier = Modifier.align(Alignment.Center))
-                }
-            }
+        // route: home/about
+        composable(Screen.About.route){
+            AboutScreen()
         }
     }
+
 }
 
 @Preview
