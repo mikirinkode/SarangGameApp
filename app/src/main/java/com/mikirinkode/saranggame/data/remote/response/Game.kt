@@ -32,7 +32,7 @@ data class Game(
 	val playtime: Int? = null,
 
 	@field:SerializedName("genres")
-	val genres: List<GenresItem?>? = null,
+	val genres: List<GenresItem>? = null,
 
 	@field:SerializedName("website")
 	val website: String? = null,

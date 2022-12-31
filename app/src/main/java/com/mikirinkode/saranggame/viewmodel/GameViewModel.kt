@@ -1,6 +1,8 @@
 package com.mikirinkode.saranggame.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikirinkode.saranggame.data.remote.RemoteDataSource
@@ -24,6 +26,17 @@ class GameViewModel(private val remoteDataSource: RemoteDataSource) : ViewModel(
     val listState: StateFlow<UiState<List<Game>>>
         get() = _listState
 
+
+    private val _query = mutableStateOf("")
+    val query: State<String> get() = _query
+
+    fun clearQuery(){
+        _query.value = ""
+    }
+
+    fun search(query: String){
+        _query.value = query
+    }
 
     fun getGameDetail(gameId: String) {
         viewModelScope.launch {
