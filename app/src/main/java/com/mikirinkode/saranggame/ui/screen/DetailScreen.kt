@@ -1,9 +1,7 @@
 package com.mikirinkode.saranggame.ui.screen
 
-import android.graphics.Paint.Align
 import android.text.Html
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
@@ -11,8 +9,6 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +42,8 @@ import java.text.DecimalFormat
 @Composable
 fun DetailScreen(
     gameId: Int,
+    onShareClick : (String) -> Unit,
+    openWebsite : (String) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,6 +51,10 @@ fun DetailScreen(
     val context = LocalContext.current
     val viewModel: GameViewModel =
         viewModel(factory = ViewModelFactory.getInstance(context))
+
+    var isFavorite by remember {
+        mutableStateOf(false)
+    }
 
     viewModel.gameDetailState.collectAsState(initial = UiState.Loading).value.let { uiState ->
         when (uiState) {
@@ -73,6 +74,15 @@ fun DetailScreen(
                         genres = genres,
                         website = it.website ?: "",
                         imageUrl = it.backgroundImage ?: "",
+                        isFavorite = isFavorite,
+                        onFavoriteClick = {
+                            isFavorite = !isFavorite
+                            if (isFavorite) {
+                            } else {
+                            }
+                        },
+                        onShareClick = onShareClick,
+                        openWebsite = openWebsite,
                         navigateBack = navigateBack
                     )
                 }
@@ -97,6 +107,10 @@ fun DetailContent(
     genres: List<GenresItem>,
     website: String,
     imageUrl: String,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
+    onShareClick: (String) -> Unit,
+    openWebsite: (String) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -104,9 +118,7 @@ fun DetailContent(
 
     val state = rememberCollapsingToolbarScaffoldState()
 
-    var isFavorite by remember {
-        mutableStateOf(false)
-    }
+
 
     Box {
         CollapsingToolbarScaffold(
@@ -133,7 +145,7 @@ fun DetailContent(
                             // change alpha of image as the toolbar expands
                             alpha = state.toolbarState.progress
                         }
-                ){
+                ) {
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = "Game Image",
@@ -146,9 +158,11 @@ fun DetailContent(
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
                     ) {
-                        for (genre in genres){
+                        for (genre in genres) {
                             GenreCard(genre = genre.name ?: "")
                         }
                     }
@@ -211,6 +225,47 @@ fun DetailContent(
                             }
                         }
                         Spacer(modifier = Modifier.padding(8.dp))
+                        Card(
+                            shape = MaterialTheme.shapes.small,
+                            backgroundColor = Dark500,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Text(
+                                        text = "Rating",
+                                        color = MaterialTheme.colors.primary,
+                                        fontSize = 12.sp,
+                                    )
+                                    Text(
+                                        text = rating,
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Text(
+                                        text = "Release Date",
+                                        color = MaterialTheme.colors.primary,
+                                        fontSize = 12.sp,
+                                    )
+                                    Text(
+                                        text = releaseDate,
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.padding(16.dp))
                         Row(
                             verticalAlignment = Alignment.Top
                         ) {
@@ -225,7 +280,7 @@ fun DetailContent(
                                     Text(
                                         text = "Description",
                                         color = MaterialTheme.colors.primary,
-                                        fontSize = 16.sp
+                                        fontSize = 12.sp
                                     )
                                     Spacer(modifier = Modifier.padding(8.dp))
 
@@ -245,17 +300,18 @@ fun DetailContent(
                                 SmallIconButton(
                                     icon = if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_outlined,
                                     contentDescription = "Favorite Button",
-                                    onClick = {
-                                        isFavorite = !isFavorite
-                                    })
+                                    onClick = onFavoriteClick
+                                )
                                 SmallIconButton(
                                     icon = R.drawable.ic_share,
                                     contentDescription = "Share Button",
-                                    onClick = { /*TODO*/ })
+                                    onClick = { onShareClick(title) }
+                                )
                                 SmallIconButton(
                                     icon = R.drawable.ic_web,
                                     contentDescription = "Open Website Button",
-                                    onClick = { /*TODO*/ })
+                                    onClick = { openWebsite(website) }
+                                )
                             }
                         }
                     }
@@ -318,7 +374,8 @@ fun GenreCard(
             text = genre,
             color = MaterialTheme.colors.primary,
             fontSize = 14.sp,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier
+                .padding(4.dp)
                 .align(Alignment.Center),
             textAlign = TextAlign.Center
         )
@@ -329,6 +386,6 @@ fun GenreCard(
 @Composable
 fun DetailScreenPreview() {
     SarangGameTheme {
-        DetailScreen(0, {})
+        DetailScreen(0, {},{}, {})
     }
 }

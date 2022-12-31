@@ -1,8 +1,12 @@
 package com.mikirinkode.saranggame
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -48,8 +52,16 @@ fun SarangGameApp(
             )
         ) {
             val gameId = it.arguments?.getInt("gameId") ?: 0
+            val context = LocalContext.current
+
             DetailScreen(
                 gameId = gameId,
+                onShareClick = { title ->
+                    shareGame(context, title)
+                },
+                openWebsite = { url ->
+                    openWebsite(context, url)
+                },
                 navigateBack = {
                     navController.navigateUp()
                 }
@@ -57,7 +69,7 @@ fun SarangGameApp(
         }
 
         // route: home/about
-        composable(Screen.About.route){
+        composable(Screen.About.route) {
             AboutScreen(
                 navigateBack = {
                     navController.navigateUp()
@@ -66,6 +78,29 @@ fun SarangGameApp(
         }
     }
 
+}
+
+fun shareGame(context: Context, title: String) {
+    val shareIntent = Intent()
+    val appName = context.getString(R.string.app_name)
+    shareIntent.action = Intent.ACTION_SEND
+    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey i found a cool game, $title on $appName")
+    shareIntent.type = "text/plain"
+    context.startActivity(
+        Intent.createChooser(
+            shareIntent,
+            "Share To"
+        )
+    )
+}
+
+fun openWebsite(context: Context, link: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    context.startActivity(
+        Intent.createChooser(
+            intent, "Open Website"
+        )
+    )
 }
 
 @Preview
