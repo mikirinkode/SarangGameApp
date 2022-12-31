@@ -13,6 +13,12 @@ interface ApiService {
         @Query("key") key: String
     ): GameList
 
+    @GET("games")
+    suspend fun searchGame(
+        @Query("key") key: String,
+        @Query("search") query: String
+    ): GameList
+
     @GET("games/{id}")
     suspend fun getGameDetail(
         @Path("id") id: String,

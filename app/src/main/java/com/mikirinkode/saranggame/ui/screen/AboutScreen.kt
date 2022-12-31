@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikirinkode.saranggame.R
+import com.mikirinkode.saranggame.ui.theme.Dark500
 import com.mikirinkode.saranggame.ui.theme.SarangGameTheme
 
 @Composable
@@ -36,7 +37,7 @@ fun AboutScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black)
+                    .background(Dark500)
             ) {
                 IconButton(onClick = navigateBack, modifier = Modifier.padding(8.dp)) {
                     Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "back button")
@@ -67,7 +68,7 @@ fun AboutScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black)
+                    .background(Dark500)
                     .padding(top = 32.dp, bottom = 32.dp, end = 16.dp)
             ) {
                 Row(

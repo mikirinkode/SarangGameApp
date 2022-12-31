@@ -34,6 +34,25 @@ class RemoteDataSource(private val api: ApiService) {
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun searchGame(query: String): Flow<ApiResponse<GameList>> {
+        return flow {
+            try {
+                val response = api.searchGame(apiKey, query)
+                val gameList = response.results
+                if (!gameList.isNullOrEmpty()) {
+                    emit(ApiResponse.Success(response))
+                } else if (gameList != null && gameList.isEmpty()) {
+                    emit(
+                        ApiResponse.Empty(response)
+                    )
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+                Log.e("RemoteDataSource", "Failed to Get Game List")
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     suspend fun getDetailGame(id: String): Flow<ApiResponse<Game>> {
         return flow {
             try {

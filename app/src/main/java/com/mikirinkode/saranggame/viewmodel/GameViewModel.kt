@@ -32,10 +32,32 @@ class GameViewModel(private val remoteDataSource: RemoteDataSource) : ViewModel(
 
     fun clearQuery(){
         _query.value = ""
+        getGameList()
     }
 
     fun search(query: String){
         _query.value = query
+        viewModelScope.launch{
+            remoteDataSource.searchGame(query)
+                .catch {
+                    _listState.value = UiState.Error(it.message.toString())
+                }
+                .collect { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _listState.value = UiState.Success(response.data.results)
+                            Log.e("GameViewModel::search", response.data.toString())
+                        }
+                        is ApiResponse.Empty -> {
+                            _listState.value = UiState.Success(response.data.results)
+                            Log.e("GameViewModel::search", response.data.toString())
+                        }
+                        is ApiResponse.Error -> {
+                            _listState.value = UiState.Error(response.errorMessage)
+                        }
+                    }
+                }
+        }
     }
 
     fun getGameDetail(gameId: String) {
